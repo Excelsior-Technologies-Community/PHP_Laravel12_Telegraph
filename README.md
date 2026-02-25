@@ -1,59 +1,456 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PHP_Laravel12_Telegraph
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Project Description
 
-## About Laravel
+PHP_Laravel12_Telegraph is a Laravel 12 based application that demonstrates how to integrate a Telegram Bot using the DefStudio Telegraph package.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This project allows the Laravel application to communicate with Telegram by sending messages directly to users through a Telegram bot. It uses the official Telegram Bot API and stores bot and chat information in the MySQL database.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The Telegraph package simplifies Telegram bot integration by providing ready-made models, migrations, and methods for sending messages, managing chats, and handling bot communication without writing complex API code.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+• Laravel 12 integration with Telegram Bot
+• Send messages from Laravel to Telegram user
+• Secure bot token configuration using .env
+• Database storage for bots and chats
+• Simple and clean controller-based message sending
+• Beginner-friendly implementation
+• Uses official DefStudio Telegraph package
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Technologies Used
 
-### Premium Partners
+• Laravel 12
+• PHP 8+
+• MySQL
+• Telegram Bot API
+• DefStudio Telegraph Package
+• Composer
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
 
-## Contributing
+## Use Cases
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+• Telegram notification system
+• Alert system for applications
+• Chat automation
+• Admin notification bot
+• Real-time message integration
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
+## Installation Steps
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+
+## STEP 1: Create Laravel 12 Project
+
+### Open terminal / CMD and run:
+
+```
+composer create-project laravel/laravel PHP_Laravel12_Telegraph "12.*"
+
+```
+
+### Go inside project:
+
+```
+cd PHP_Laravel12_Telegraph
+
+```
+
+#### Explanation:
+
+This command installs a fresh Laravel 12 project with all required core files.
+
+It creates the project folder and prepares the Laravel environment.
+
+
+
+
+## STEP 2: Database Setup 
+
+### Open .env and set:
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=Telegraph_laravel12
+DB_USERNAME=root
+DB_PASSWORD=
+
+```
+
+### Create database in MySQL / phpMyAdmin:
+
+```
+Database name: Telegraph_laravel12
+
+```
+
+#### Explanation:
+
+This step connects Laravel application with MySQL database so Telegraph can store bot and chat information.
+
+
+
+
+## STEP 3: Install Telegraph Package
+
+### Use composer to install the package:
+
+```
+composer require defstudio/telegraph
+
+```
+
+#### Explanation:
+
+This installs the Telegraph package which provides easy integration between Laravel and Telegram Bot API.
+
+
+
+
+
+## STEP 4: Publish Telegraph Files
+
+### Publish migration:
+
+```
+php artisan vendor:publish --tag="telegraph-migrations"
+
+```
+
+### Publish config:
+
+```
+php artisan vendor:publish --tag="telegraph-config"
+
+```
+
+### Run:
+
+```
+php artisan migrate
+
+```
+
+#### Explanation:
+
+This creates required database tables like telegraph_bots and telegraph_chats and publishes configuration file.
+
+
+
+
+
+## STEP 5: Create Telegram Bot using BotFather
+
+1. Open Telegram
+
+2. Search:
+
+```
+BotFather
+
+```
+
+3. This is official Telegram bot creator by Telegram.
+
+4. Send:
+
+```
+/start
+
+```
+
+5. Then send:
+
+```
+/newbot
+
+```
+
+6. Enter:
+
+```
+Bot Name: Laravel Telegraph Bot
+
+```
+
+7. Enter username:
+
+```
+laravel_telegraph_bot
+
+```
+
+8. You will get BOT TOKEN:
+
+Example:
+
+```
+123456789:ABCDEFxxxxxxxxxxxxxxxxxxxx
+
+```
+
+9. Copy this token.
+
+
+#### Explanation:
+
+BotFather is official Telegram tool to create bots. It generates unique BOT TOKEN used for authentication.
+
+
+
+
+
+## STEP 6: Add Token in .env
+
+### Open .env
+
+##### Add:
+
+```
+TELEGRAPH_BOT_TOKEN=123456789:ABCDEFxxxxxxxxxxxx
+
+```
+
+
+#### Explanation:
+
+This token connects your Laravel application with your Telegram bot securely.
+
+
+
+
+
+## STEP 7: Start Chat with Your Bot
+
+1. Open Telegram
+
+2. Search your bot:
+
+```
+laravel_telegraph_bot
+
+```
+
+3. Click:
+
+```
+START
+
+```
+
+#### Explanation:
+
+This registers your Telegram account as a chat so Laravel can send messages to you.
+
+
+
+## STEP 8: Create Controller to Send Message
+
+### Run command:
+
+```
+php artisan make:controller TelegramController
+
+```
+
+### File created: app/Http/Controllers/TelegramController.php
+
+```
+<?php
+
+namespace App\Http\Controllers;
+
+use DefStudio\Telegraph\Facades\Telegraph;
+use DefStudio\Telegraph\Models\TelegraphBot;
+
+class TelegramController extends Controller
+{
+    public function sendMessage()
+    {
+        $bot = TelegraphBot::first();
+
+        $chat = $bot->chats()->first();
+
+        Telegraph::bot($bot)
+            ->chat($chat->chat_id)
+            ->message('Hello from Laravel 12 Telegraph!')
+            ->send();
+
+        return "Message sent successfully!";
+    }
+}
+
+```
+
+#### Explanation:
+
+This controller fetches bot and chat from database and sends message using Telegraph package.
+
+
+
+
+
+## STEP 9: Add Route
+
+### Open: routes/web.php
+
+#### Add:
+
+```
+use App\Http\Controllers\TelegramController;
+
+Route::get('/send-message', [TelegramController::class, 'sendMessage']);
+
+```
+
+#### Explanation:
+
+This creates URL endpoint to trigger message sending from browser.
+
+
+
+
+
+## STEP 10: Create Bot Record in Database
+
+### Run:
+
+```
+php artisan tinker
+
+```
+
+1. Get bot first
+
+```
+use DefStudio\Telegraph\Models\TelegraphBot;
+
+$bot = TelegraphBot::first();
+
+```
+
+#### You should see output like:
+
+```
+DefStudio\Telegraph\Models\TelegraphBot {#....}
+
+```
+
+2. Create chat using bot relation (IMPORTANT)
+
+```
+$bot->chats()->create([
+    'chat_id' => '8*********',
+    'name' => 'User Name'
+]);
+
+```
+
+#### This automatically sets:
+
+```
+telegraph_bot_id = 1
+
+```
+
+3. Exit tinker
+
+```
+exit
+
+```
+
+#### Explanation:
+
+This stores your Telegram chat ID in database and links it with bot.
+
+
+
+
+
+
+## STEP 11: Test Message Sending
+
+### Run server:
+
+```
+php artisan serve
+
+```
+
+### Open browser:
+
+```
+http://127.0.0.1:8000/send-message
+
+```
+
+### Output:
+
+```
+Message sent successfully!
+
+```
+
+<img width="1919" height="919" alt="Screenshot 2026-02-25 145534" src="https://github.com/user-attachments/assets/767abd28-e123-4bc9-93e1-b1d5ebd52a94" />
+
+
+### Check Telegram.
+
+#### You will receive:
+
+```
+Hello from Laravel 12 Telegraph!
+
+```
+
+
+<img width="326" height="38" alt="Screenshot 2026-02-25 145614" src="https://github.com/user-attachments/assets/e66e9f03-586e-46a0-ab64-5b627e58bb3b" />
+
+
+SUCCESS!
+
+#### Explanation:
+
+This sends message from Laravel application to Telegram bot successfully.
+
+
+
+
+
+# Project Folder Structure:
+
+```
+PHP_Laravel12_Telegraph
+│
+├── app
+│   ├── Http
+│   │   ├── Controllers
+│   │   │   ├── TelegramController.php
+│
+├── config
+│   └── telegraph.php
+│
+├── database
+│   └── migrations
+│
+├── routes
+│   └── web.php
+│
+├── .env
+│
+└── composer.json
+
+```
