@@ -20,11 +20,10 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -41,7 +40,13 @@
             font-size: 0.9rem;
         }
 
-        /* Cards */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .card {
             background: white;
             border-radius: 8px;
@@ -58,9 +63,14 @@
             border-bottom: 2px solid #f0f0f0;
         }
 
-        /* Form Elements */
         .form-group {
             margin-bottom: 15px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         label {
@@ -71,18 +81,21 @@
             font-size: 0.9rem;
         }
 
-        textarea {
+        textarea, input[type="text"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
             font-family: inherit;
+        }
+
+        textarea {
             resize: vertical;
             min-height: 100px;
         }
 
-        textarea:focus {
+        textarea:focus, input[type="text"]:focus, select:focus {
             outline: none;
             border-color: #4a90e2;
         }
@@ -104,6 +117,10 @@
 
         button:active {
             transform: translateY(1px);
+        }
+
+        .btn-block {
+            width: 100%;
         }
 
         .btn-danger {
@@ -130,12 +147,19 @@
             background: #7f8c8d;
         }
 
+        .btn-purple {
+            background: #9b59b6;
+        }
+
+        .btn-purple:hover {
+            background: #8e44ad;
+        }
+
         .btn-small {
             padding: 5px 12px;
             font-size: 12px;
         }
 
-        /* Alert Messages */
         .alert {
             padding: 10px 15px;
             border-radius: 4px;
@@ -155,7 +179,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        /* Character Counter */
         .char-counter {
             text-align: right;
             font-size: 12px;
@@ -171,7 +194,19 @@
             color: #e74c3c;
         }
 
-        /* Search Bar */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-blue { background: #deb887; color: #8b4513; }
+        .badge-green { background: #d4edda; color: #155724; }
+        .badge-purple { background: #e8daef; color: #6c3483; }
+
         .search-bar {
             display: flex;
             gap: 10px;
@@ -186,12 +221,6 @@
             font-size: 14px;
         }
 
-        .search-bar input:focus {
-            outline: none;
-            border-color: #4a90e2;
-        }
-
-        /* Toolbar */
         .toolbar {
             display: flex;
             gap: 10px;
@@ -209,9 +238,10 @@
             font-size: 14px;
         }
 
-        /* Table */
         .table-responsive {
             overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         table {
@@ -223,6 +253,7 @@
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
         }
 
         th {
@@ -237,9 +268,8 @@
         }
 
         .message-content {
-            max-width: 400px;
+            max-width: 300px;
             word-wrap: break-word;
-            font-size: 14px;
         }
 
         .action-buttons {
@@ -248,61 +278,24 @@
             flex-wrap: wrap;
         }
 
-        /* Checkbox */
         input[type="checkbox"] {
             width: 16px;
             height: 16px;
             cursor: pointer;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px;
             color: #999;
         }
 
-        .empty-state h3 {
-            margin-bottom: 10px;
-            color: #666;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-        }
-
-        /* Pagination */
         .pagination {
             margin-top: 20px;
             display: flex;
             justify-content: center;
         }
 
-        .pagination nav {
-            display: inline-block;
-        }
-
-        .pagination .relative {
-            display: inline-block;
-            margin: 0 2px;
-        }
-
-        .pagination a, .pagination span {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-decoration: none;
-            color: #4a90e2;
-            font-size: 14px;
-        }
-
-        .pagination span {
-            background: #4a90e2;
-            color: white;
-            border-color: #4a90e2;
-        }
-
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -338,31 +331,19 @@
             gap: 10px;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .card {
-                padding: 15px;
-            }
-            
-            th, td {
-                padding: 8px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        .audio-player {
+            width: 160px;
+            height: 28px;
         }
 
-        /* Loading */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .grid-layout { grid-template-columns: 1fr; }
+            .card { padding: 15px; }
+            th, td { padding: 8px; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+        }
+
         .loading {
             display: inline-block;
             width: 14px;
@@ -386,7 +367,113 @@
         <p>Send and manage your Telegram messages</p>
     </div>
 
-    <!-- Send Message Card -->
+    <div class="grid-layout">
+        <div class="card">
+            <h2>⚙️ Auto-Reply Rules Manager</h2>
+            <form method="POST" action="{{ route('auto_replies.store') }}">
+                @csrf
+                <div class="form-group grid-2">
+                    <div>
+                        <label>Keyword</label>
+                        <input type="text" name="keyword" placeholder="e.g. price" required>
+                    </div>
+                    <div>
+                        <label>Match Type</label>
+                        <select name="match_type">
+                            <option value="exact">Exact Match</option>
+                            <option value="contains">Contains Word</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Bot Response Text</label>
+                    <textarea name="reply_text" placeholder="Type what bot will auto reply..." required style="min-height:70px;"></textarea>
+                </div>
+                <button type="submit" class="btn-block">Add Auto Reply Rule</button>
+            </form>
+
+            <div class="table-responsive" style="margin-top:15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Reply text</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($autoReplies ?? [] as $rule)
+                        <tr>
+                            <td><span class="badge badge-purple">{{ $rule->keyword }}</span> <small>({{ $rule->match_type }})</small></td>
+                            <td>{{ $rule->reply_text }}</td>
+                            <td>
+                                <form action="{{ route('auto_replies.destroy', $rule->id) }}" method="POST">
+                                    @csrf @method('DELETE')
+                                    <button class="btn-danger btn-small">&times;</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📜 Bot Command Manager GUI</h2>
+            <form method="POST" action="{{ route('commands.store') }}">
+                @csrf
+                <div class="form-group grid-2">
+                    <div>
+                        <label>Select Bot</label>
+                        <select name="telegraph_bot_id">
+                            @foreach($bots ?? [] as $b)
+                                <option value="{{ $b->id }}">{{ $b->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label>Command</label>
+                        <input type="text" name="command" placeholder="e.g. /help" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Command Description</label>
+                    <input type="text" name="description" placeholder="Description of what command does..." required>
+                </div>
+                <button type="submit" class="btn-purple btn-block">Register & Sync Command</button>
+            </form>
+
+            <div class="table-responsive" style="margin-top:15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bot</th>
+                            <th>Command</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($commands ?? [] as $cmd)
+                        <tr>
+                            <td>{{ $cmd->bot->name ?? 'Bot' }}</td>
+                            <td><strong style="color:#9b59b6;">{{ $cmd->command }}</strong></td>
+                            <td>{{ $cmd->description }}</td>
+                            <td>
+                                <form action="{{ route('commands.destroy', $cmd->id) }}" method="POST">
+                                    @csrf @method('DELETE')
+                                    <button class="btn-danger btn-small">&times;</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <h2>Send New Message</h2>
         
@@ -409,18 +496,15 @@
         </form>
     </div>
 
-    <!-- Messages Card -->
     <div class="card">
-        <h2>Message History</h2>
+        <h2>Message History Stream (AJAX Live Polling)</h2>
         
-        <!-- Search Bar -->
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Search messages..." value="{{ request('search', '') }}">
             <button onclick="searchMessages()" class="btn-secondary">Search</button>
             <button onclick="clearSearch()" class="btn-secondary">Clear</button>
         </div>
         
-        <!-- Toolbar -->
         <div class="toolbar">
             <div class="select-all">
                 <input type="checkbox" id="selectAllCheckbox">
@@ -434,20 +518,87 @@
             </button>
         </div>
         
-        <!-- Messages Table -->
         <div id="messagesContainer">
-            @include('partials.message-table', ['messages' => $messages])
+            <div class="table-responsive">
+                <table id="messages-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">Select</th>
+                            <th style="width: 60px;">ID</th>
+                            <th>Chat Detail</th>
+                            <th>Message Content</th>
+                            <th>Media Attached</th>
+                            <th>Direction</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages-body">
+                        @forelse($messages ?? [] as $msg)
+                        <tr class="message-row" data-id="{{ $msg->id }}">
+                            <td><input type="checkbox" class="message-checkbox" value="{{ $msg->id }}"></td>
+                            <td><strong>{{ $msg->id }}</strong></td>
+                            <td>
+                                <div><strong>{{ $msg->telegraphChat->name ?? 'Chat Room' }}</strong></div>
+                                <div style="font-size:11px; color:#999; font-family:monospace;">ID: {{ $msg->telegraphChat->chat_id ?? 'N/A' }}</div>
+                            </td>
+                            <td class="message-content">{{ $msg->text ?? $msg->message }}</td>
+                            <td>
+                                @if(isset($msg->file_type) && $msg->file_type === 'image')
+                                    <a href="{{ $msg->file_path }}" target="_blank" class="badge badge-purple" style="text-decoration:none;">🖼️ View Photo</a>
+                                @elseif(isset($msg->file_type) && $msg->file_type === 'voice')
+                                    <audio src="{{ $msg->file_path }}" controls class="audio-player"></audio>
+                                @elseif(isset($msg->file_type) && $msg->file_type === 'pdf')
+                                    <a href="{{ $msg->file_path }}" target="_blank" class="badge badge-blue" style="text-decoration:none;">📄 View PDF</a>
+                                @else
+                                    <span style="color:#aaa; font-size:12px;">None</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge {{ ($msg->direction ?? 'inbound') === 'inbound' ? 'badge-blue' : 'badge-green' }}">
+                                    {{ $msg->direction ?? 'inbound' }}
+                                </span>
+                            </td>
+                            <td style="font-size:12px; color:#666;">{{ $msg->created_at->diffForHumans() }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <form method="POST" action="/messages/reply/{{ $msg->telegraph_chat_id }}" style="display:flex; gap:3px; margin-bottom:0;">
+                                        @csrf
+                                        <input type="text" name="text" placeholder="Reply..." required style="padding:4px; font-size:12px; width:100px;">
+                                        <button class="btn-small" style="padding:4px 8px;">Send</button>
+                                    </form>
+                                    <button onclick="editMessage({{ $msg->id }}, '{{ addslashes($msg->text ?? $msg->message) }}')" class="btn-secondary btn-small">Edit</button>
+                                    <button onclick="deleteMessage({{ $msg->id }})" class="btn-danger btn-small">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <h3>No messages found</h3>
+                                <p>History stream is currently empty Room.</p>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if(isset($messages) && method_exists($messages, 'links'))
+                <div class="pagination">
+                    {{ $messages->appends(request()->query())->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>
 
-<!-- Edit Modal -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>Edit Message</h3>
         </div>
-        <textarea id="editMessageText" rows="4" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; font-family:inherit;"></textarea>
+        <textarea id="editMessageText" rows="4"></textarea>
         <div class="modal-footer">
             <button onclick="closeModal()" class="btn-secondary btn-small">Cancel</button>
             <button onclick="updateMessage()" class="btn-small">Update</button>
@@ -457,8 +608,8 @@
 
 <script>
     let currentEditId = null;
+    let lastMessageId = {{ isset($messages) && $messages->first() ? $messages->first()->id : 0 }};
 
-    // Character counter
     const messageTextarea = document.getElementById('message');
     const charCounter = document.getElementById('charCounter');
     
@@ -478,12 +629,10 @@
         });
     }
     
-    // Select All functionality
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
     
     function updateBulkDeleteButton() {
-        const checkboxes = document.querySelectorAll('.message-checkbox');
         const checkedCount = document.querySelectorAll('.message-checkbox:checked').length;
         
         if (checkedCount > 0) {
@@ -494,17 +643,6 @@
         }
     }
     
-    if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.message-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAllCheckbox.checked;
-            });
-            updateBulkDeleteButton();
-        });
-    }
-    
-    // Delete single message
     function deleteMessage(id) {
         if (confirm('Are you sure you want to delete this message?')) {
             fetch('/delete-message/' + id, {
@@ -529,7 +667,6 @@
         }
     }
     
-    // Edit message
     function editMessage(id, message) {
         currentEditId = id;
         document.getElementById('editMessageText').value = message;
@@ -573,7 +710,6 @@
         });
     }
     
-    // Bulk delete
     function bulkDelete() {
         const checkboxes = document.querySelectorAll('.message-checkbox:checked');
         const selectedIds = Array.from(checkboxes).map(cb => cb.value);
@@ -608,7 +744,6 @@
         }
     }
     
-    // Clear all messages
     function clearAllMessages() {
         if (confirm('Warning: This will delete ALL messages. Are you sure?')) {
             fetch('/clear-all-messages', {
@@ -633,25 +768,13 @@
         }
     }
     
-    // Search messages
     function searchMessages() {
         const searchTerm = document.getElementById('searchInput').value;
-        
-        fetch('/search-messages?search=' + encodeURIComponent(searchTerm), {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('messagesContainer').innerHTML = html;
-            attachEventListeners();
-        });
+        window.location.href = '?search=' + encodeURIComponent(searchTerm);
     }
     
     function clearSearch() {
-        document.getElementById('searchInput').value = '';
-        searchMessages();
+        window.location.href = window.location.pathname;
     }
     
     function attachEventListeners() {
@@ -689,7 +812,6 @@
         }, 3000);
     }
     
-    // Close modal when clicking outside
     window.onclick = function(event) {
         const modal = document.getElementById('editModal');
         if (event.target === modal) {
@@ -697,7 +819,68 @@
         }
     }
     
-    // Initial attachment of event listeners
+    setInterval(async () => {
+        try {
+            const response = await fetch(`/messages/api/realtime?last_id=${lastMessageId}`);
+            const data = await response.json();
+            
+            if (data.messages && data.messages.length > 0) {
+                const tbody = document.getElementById('messages-body');
+                const emptyTr = tbody.querySelector('.empty-state');
+                if (emptyTr) {
+                    tbody.innerHTML = '';
+                }
+
+                data.messages.forEach(msg => {
+                    if (msg.id > lastMessageId) {
+                        lastMessageId = msg.id;
+                    }
+
+                    let mediaHtml = '<span style="color:#aaa; font-size:12px;">None</span>';
+                    if (msg.file_type === 'image') {
+                        mediaHtml = `<a href="${msg.file_path}" target="_blank" class="badge badge-purple" style="text-decoration:none;">🖼️ View Photo</a>`;
+                    } else if (msg.file_type === 'voice') {
+                        mediaHtml = `<audio src="${msg.file_path}" controls class="audio-player"></audio>`;
+                    } else if (msg.file_type === 'pdf') {
+                        mediaHtml = `<a href="${msg.file_path}" target="_blank" class="badge badge-blue" style="text-decoration:none;">📄 View PDF</a>`;
+                    }
+
+                    const directionClass = msg.direction === 'outbound' ? 'badge-green' : 'badge-blue';
+
+                    const rowHtml = `
+                        <tr class="message-row" data-id="${msg.id}" style="background:#fffde7;">
+                            <td><input type="checkbox" class="message-checkbox" value="${msg.id}"></td>
+                            <td><strong>${msg.id}</strong></td>
+                            <td>
+                                <div><strong>${msg.telegraph_chat ? msg.telegraph_chat.name : 'Chat Room'}</strong></div>
+                                <div style="font-size:11px; color:#999; font-family:monospace;">ID: ${msg.telegraph_chat ? msg.telegraph_chat.chat_id : 'N/A'}</div>
+                            </td>
+                            <td class="message-content">${msg.text ? msg.text : msg.message}</td>
+                            <td>${mediaHtml}</td>
+                            <td><span class="badge ${directionClass}">${msg.direction ? msg.direction : 'inbound'}</span></td>
+                            <td style="font-size:12px; color:#666;">Just Now</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <form method="POST" action="/messages/reply/${msg.telegraph_chat_id}" style="display:flex; gap:3px; margin-bottom:0;">
+                                        <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
+                                        <input type="text" name="text" placeholder="Reply..." required style="padding:4px; font-size:12px; width:100px;">
+                                        <button class="btn-small" style="padding:4px 8px;">Send</button>
+                                    </form>
+                                    <button onclick="editMessage(${msg.id}, '${(msg.text ? msg.text : msg.message).replace(/'/g, "\\'")}')" class="btn-secondary btn-small">Edit</button>
+                                    <button onclick="deleteMessage(${msg.id})" class="btn-danger btn-small">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('afterbegin', rowHtml);
+                });
+                attachEventListeners();
+            }
+        } catch (error) {
+            console.error("Realtime fetching error:", error);
+        }
+    }, 4000);
+
     document.addEventListener('DOMContentLoaded', function() {
         attachEventListeners();
         

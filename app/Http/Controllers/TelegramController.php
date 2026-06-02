@@ -3,172 +3,257 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DefStudio\Telegraph\Facades\Telegraph;
 use DefStudio\Telegraph\Models\TelegraphBot;
+use DefStudio\Telegraph\Models\TelegraphChat;
 use App\Models\Message;
+use App\Models\TelegraphBotCommand;
+use App\Models\TelegraphAutoReply;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class TelegramController extends Controller
 {
-    // ✅ Show UI + message history
     public function index()
     {
-        $messages = Message::latest()->paginate(10);
-        return view('telegram', compact('messages'));
+        $messages = Message::with('telegraphChat.bot')->latest()->paginate(10);
+        $bots = TelegraphBot::all();
+        $autoReplies = TelegraphAutoReply::latest()->get();
+        $commands = TelegraphBotCommand::with('bot')->latest()->get();
+
+        return view('telegram', compact('messages', 'bots', 'autoReplies', 'commands'));
     }
 
-    // ✅ Send message
-    public function sendMessage(Request $request)
+    public function getNewMessages(Request $request)
     {
-        // Validate message
-        $request->validate([
-            'message' => 'required|string|max:1000'
+        $lastId = $request->input('last_id', 0);
+        $newMessages = Message::with('telegraphChat.bot')
+            ->where('id', '>', $lastId)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'messages' => $newMessages
+        ]);
+    }
+
+   public function sendMessage(Request $request)
+{
+    $request->validate([
+        'message' => 'required|string'
+    ]);
+
+    $chat = TelegraphChat::first();
+
+    if (!$chat) {
+        return redirect()->back()->with('error', 'No active chat room found to send message!');
+    }
+
+    try {
+        $chat->html($request->message)->send();
+
+        Message::create([
+            'telegraph_chat_id' => $chat->id,
+            'message' => $request->message,
+            'direction' => 'outbound',
         ]);
 
-        // Get bot
-        $bot = TelegraphBot::first();
-
-        if (!$bot) {
-            return back()->with('error', 'Bot not found. Please create bot first.');
-        }
-
-        // Get chat
-        $chat = $bot->chats()->first();
-
-        if (!$chat) {
-            return back()->with('error', 'Chat not found. Please add chat_id in database.');
-        }
-
-        try {
-            // Send message to Telegram
-            Telegraph::bot($bot)
-                ->chat($chat->chat_id)
-                ->message($request->message)
-                ->send();
-
-            // Save using Model
-            Message::create([
-                'message' => $request->message
-            ]);
-
-            return redirect('/telegram')->with('success', 'Message Sent Successfully!');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to send message: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Message sent successfully!');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Telegram Connection Error: ' . $e->getMessage());
     }
+}
 
-    // ✅ Delete single message
-    public function deleteMessage($id)
+    public function webhook(Request $request, $token)
     {
-        try {
-            $message = Message::findOrFail($id);
-            $message->delete();
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Message deleted successfully!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete message!'
-            ], 500);
+        $bot = TelegraphBot::where('token', $token)->firstOrFail();
+        $webhookData = $request->all();
+
+        if (!isset($webhookData['message'])) {
+            return response()->json(['status' => 'success']);
         }
-    }
 
-    // ✅ Update message
-    public function updateMessage(Request $request, $id)
-    {
-        $request->validate([
-            'message' => 'required|string|max:1000'
+        $tgMessage = $webhookData['message'];
+        $chatId = $tgMessage['chat']['id'];
+        $chatName = $tgMessage['chat']['first_name'] ?? ($tgMessage['chat']['title'] ?? 'Unknown');
+
+        $chat = TelegraphChat::firstOrCreate(
+            ['chat_id' => $chatId],
+            ['name' => $chatName, 'telegraph_bot_id' => $bot->id]
+        );
+
+        $text = $tgMessage['text'] ?? '';
+        $fileType = null;
+        $filePath = null;
+
+        if (isset($tgMessage['photo'])) {
+            $fileType = 'image';
+            $photo = end($tgMessage['photo']);
+            $filePath = $this->downloadTelegramFile($bot->token, $photo['file_id'], 'images');
+            $text = $tgMessage['caption'] ?? 'Photo Message';
+        } elseif (isset($tgMessage['voice'])) {
+            $fileType = 'voice';
+            $filePath = $this->downloadTelegramFile($bot->token, $tgMessage['voice']['file_id'], 'voice');
+            $text = 'Voice Message';
+        } elseif (isset($tgMessage['document'])) {
+            $fileType = 'pdf';
+            $filePath = $this->downloadTelegramFile($bot->token, $tgMessage['document']['file_id'], 'documents');
+            $text = $tgMessage['document']['file_name'] ?? 'Document Message';
+        }
+
+        Message::create([
+            'telegraph_chat_id' => $chat->id,
+            'message' => $text,
+            'file_type' => $fileType,
+            'file_path' => $filePath,
+            'direction' => 'inbound',
         ]);
 
-        try {
-            $message = Message::findOrFail($id);
-            $oldMessage = $message->message;
-            $message->message = $request->message;
-            $message->save();
+        if ($text) {
+            $this->handleAutoReply($chat, $text);
+        }
 
-            // Optional: Send update to Telegram
-            $bot = TelegraphBot::first();
-            if ($bot && $bot->chats()->first()) {
-                $chat = $bot->chats()->first();
-                Telegraph::bot($bot)
-                    ->chat($chat->chat_id)
-                    ->message("✏️ Message Updated:\n\nOLD: " . $oldMessage . "\n\nNEW: " . $request->message)
-                    ->send();
+        return response()->json(['status' => 'success']);
+    }
+
+    private function downloadTelegramFile($token, $fileId, $folder)
+    {
+        $response = Http::get("https://api.telegram.org/bot{$token}/getFile?file_id={$fileId}");
+        if ($response->successful() && isset($response->json()['result']['file_path'])) {
+            $tgFilePath = $response->json()['result']['file_path'];
+            $fileUrl = "https://api.telegram.org/file/bot{$token}/{$tgFilePath}";
+            $fileContents = Http::get($fileUrl)->body();
+            $localPath = "public/telegram/{$folder}/" . basename($tgFilePath);
+            Storage::put($localPath, $fileContents);
+            return Storage::url($localPath);
+        }
+        return null;
+    }
+
+    private function handleAutoReply($chat, $text)
+    {
+        $replies = TelegraphAutoReply::where('is_active', true)->get();
+        foreach ($replies as $reply) {
+            $matched = false;
+            if ($reply->match_type === 'exact' && strtolower(trim($text)) === strtolower(trim($reply->keyword))) {
+                $matched = true;
+            } elseif ($reply->match_type === 'contains' && str_contains(strtolower($text), strtolower($reply->keyword))) {
+                $matched = true;
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Message updated successfully!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update message!'
-            ], 500);
+            if ($matched) {
+                $chat->html($reply->reply_text)->send();
+                Message::create([
+                    'telegraph_chat_id' => $chat->id,
+                    'message' => $reply->reply_text,
+                    'direction' => 'outbound',
+                ]);
+                break;
+            }
         }
     }
 
-    // ✅ Bulk delete messages
-    public function bulkDeleteMessages(Request $request)
+    public function storeReplyRule(Request $request)
     {
         $request->validate([
-            'message_ids' => 'required|array',
-            'message_ids.*' => 'exists:messages,id'
+            'keyword' => 'required|string',
+            'reply_text' => 'required|string',
+            'match_type' => 'required|string',
         ]);
 
-        try {
-            Message::whereIn('id', $request->message_ids)->delete();
-            
-            return response()->json([
-                'success' => true,
-                'message' => count($request->message_ids) . ' messages deleted successfully!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete messages!'
-            ], 500);
-        }
+        TelegraphAutoReply::create($request->all());
+        return redirect()->back()->with('success', 'Auto-Reply rule created successfully');
     }
 
-    // ✅ Clear all messages
+    public function deleteReplyRule($id)
+    {
+        TelegraphAutoReply::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Auto-Reply rule deleted successfully');
+    }
+
+    public function storeCommand(Request $request)
+    {
+        $request->validate([
+            'telegraph_bot_id' => 'required',
+            'command' => 'required|string',
+            'description' => 'required|string',
+        ]);
+
+        TelegraphBotCommand::create($request->all());
+        $this->syncBotCommands($request->telegraph_bot_id);
+
+        return redirect()->back()->with('success', 'Command created and synced with Telegram');
+    }
+
+    public function deleteCommand($id)
+    {
+        $command = TelegraphBotCommand::findOrFail($id);
+        $botId = $command->telegraph_bot_id;
+        $command->delete();
+        $this->syncBotCommands($botId);
+
+        return redirect()->back()->with('success', 'Command deleted and synced with Telegram');
+    }
+
+    private function syncBotCommands($botId)
+    {
+        $bot = TelegraphBot::findOrFail($botId);
+        $commands = TelegraphBotCommand::where('telegraph_bot_id', $botId)->get();
+        
+        $tgCommands = [];
+        foreach ($commands as $cmd) {
+            $tgCommands[] = [
+                'command' => ltrim($cmd->command, '/'),
+                'description' => $cmd->description
+            ];
+        }
+
+        Http::post("https://api.telegram.org/bot{$bot->token}/setMyCommands", [
+            'commands' => $tgCommands
+        ]);
+    }
+
+    public function sendManualReply(Request $request, $chatId)
+    {
+        $request->validate(['text' => 'required|string']);
+        $chat = TelegraphChat::findOrFail($chatId);
+        $chat->html($request->text)->send();
+
+        Message::create([
+            'telegraph_chat_id' => $chat->id,
+            'message' => $request->text,
+            'direction' => 'outbound',
+        ]);
+
+        return redirect()->back()->with('success', 'Message sent successfully');
+    }
+
+    public function updateMessage(Request $request, $id)
+    {
+        $request->validate(['message' => 'required|string']);
+        $message = Message::findOrFail($id);
+        $message->update(['message' => $request->message]);
+
+        return response()->json(['success' => true, 'message' => 'Message updated successfully']);
+    }
+
+    public function deleteMessage($id)
+    {
+        Message::findOrFail($id)->delete();
+        return response()->json(['success' => true, 'message' => 'Message deleted successfully']);
+    }
+
+    public function bulkDeleteMessages(Request $request)
+    {
+        if ($request->has('message_ids')) {
+            Message::whereIn('id', $request->message_ids)->delete();
+            return response()->json(['success' => true, 'message' => 'Selected messages deleted successfully']);
+        }
+        return response()->json(['success' => false, 'message' => 'No messages selected']);
+    }
+
     public function clearAllMessages()
     {
-        try {
-            $count = Message::count();
-            Message::truncate();
-            
-            return response()->json([
-                'success' => true,
-                'message' => $count . ' messages cleared successfully!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to clear messages!'
-            ], 500);
-        }
-    }
-
-    // ✅ Search messages
-    public function searchMessages(Request $request)
-    {
-        $search = $request->get('search', '');
-        
-        if (empty($search)) {
-            $messages = Message::latest()->paginate(10);
-        } else {
-            $messages = Message::where('message', 'like', '%' . $search . '%')
-                ->latest()
-                ->paginate(10);
-        }
-        
-        if ($request->ajax()) {
-            return view('partials.message-table', compact('messages'))->render();
-        }
-        
-        return view('telegram', compact('messages', 'search'));
+        Message::truncate();
+        return response()->json(['success' => true, 'message' => 'All messages cleared successfully']);
     }
 }
